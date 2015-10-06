@@ -1,8 +1,8 @@
 Package: flows
 Type: Package
 Title: Flow Selection and Analysis
-Version: 1.0
-Date: 2015-07-15
+Version: 1.1
+Date: 2015-10-06
 Authors@R: c(
       person("Timothée", "Giraud", email = "timothee.giraud@ums-riate.fr", role = c("cre","aut")),
       person("Laurent", "Beauguitte", email = "laurent.beauguitte@univ-rouen.fr", role = c("aut")),
@@ -18,10 +18,10 @@ BugReports: https://github.com/rCarto/flows/issues
 VignetteBuilder: knitr
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2015-07-17 12:23:28 UTC; tg
+Packaged: 2015-10-06 09:01:52 UTC; tg
 Author: Timothée Giraud [cre, aut],
   Laurent Beauguitte [aut],
   Marianne Guérois [ctb]
 Maintainer: Timothée Giraud <timothee.giraud@ums-riate.fr>
 Repository: CRAN
-Date/Publication: 2015-07-17 15:22:49
+Date/Publication: 2015-10-06 14:04:21
