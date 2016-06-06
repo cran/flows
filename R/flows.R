@@ -4,7 +4,9 @@
 #' and graph visualisations.
 #'
 #' An introduction to the package conceptual background and usage is proposed in
-#' a vignette (see \code{vignette(topic = "flows")}).
+#' a vignette (see \code{vignette(topic = "flows")}) and a paper (Beauguitte, Giraud & Guérois 2015).
+#' @references L. Beauguitte, T. Giraud & M. Guérois, 2015. "Un outil pour la sélection et la visualisation de flux : le package flows",
+#'  \emph{Netcom}, 29-3/4:399-408. \url{https://netcom.revues.org/2134}.
 #' @docType package
 NULL
 
@@ -80,20 +82,18 @@ prepflows <- function(mat, i, j, fij){
   mat <- mat[,c(i,j,fij)]
   names(mat) <- c("i", "j", "fij")
   listUnits <- unique(c(unique(mat$i),unique(mat$j)))
-  fullMat <- expand.grid(listUnits,listUnits, stringsAsFactors = F)
-  names(fullMat) <- c("i","j")
-  fullMat <- merge(fullMat,mat,by=c("i","j"),all.x=TRUE)
-  fullMat <- reshape2::dcast(data = fullMat, formula = i~j, value.var="fij",
-                             fill = 0, sum)
-  row.names(fullMat) <- fullMat[,1]
-  fullMat <- fullMat[, -1]
-  fullMat <- as.matrix(fullMat)
-  fullMat[is.na(fullMat)] <- 0
-  #   w <- data.frame(id = row.names(fullMat),
-  #                   sumOut = rowSums(fullMat),
-  #                   sumIn = colSums(fullMat))
-  # return(list(dfw = w, mat = fullMat))
-  return(fullMat)
+  matfinal <- matrix(nrow = length(listUnits), ncol = length(listUnits),
+                     dimnames = list(listUnits, listUnits))
+  dmat <- reshape2::dcast(data = mat, formula = i ~
+                            j, value.var = "fij", fill = 0, sum)
+  row.names(dmat) <- dmat[, 1]
+  dmat <- dmat[, -1]
+  dmat <- as.matrix(dmat)
+  i <- factor(row.names(dmat), levels = row.names(dmat))
+  j <- factor(colnames(dmat), levels = colnames(dmat))
+  matfinal[levels(i), levels(j)] <- dmat
+  matfinal[is.na(matfinal)] <- 0
+  return(matfinal)
 }
 
 
@@ -467,8 +467,8 @@ firstflowsg <- function(mat, method = "nfirst", k, ties.method = "first"){
 #' Dacey's dominants flows analysis.\cr
 #' As the output is a boolean matrix, use element-wise multiplication to get flows intensity.
 #' @seealso \link{firstflows}, \link{firstflowsg}, \link{plotDomFlows}, \link{plotMapDomFlows}
-#' @references J. Nystuen & M. Dacey, 1961, A graph theory interpretation of nodal flows,
-#' \emph{Papers and Proceedings of the Regional Science Association}, vol. 7,  29-42.
+#' @references J. Nystuen & M. Dacey, 1961, "A Graph Theory Interpretation of Nodal Regions.",
+#' \emph{Papers and Proceedings of the Regional Science Association}, 7:29-42.bt
 #' @examples
 #' # Import data
 #' data(nav)
