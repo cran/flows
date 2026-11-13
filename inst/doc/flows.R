@@ -1,109 +1,92 @@
-## ------------------------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 5,
+  fig.height = 6
+)
+
+## -----------------------------------------------------------------------------
 library(flows)
 # Import data
-data(nav)
-head(nav)
+nav <- read.csv(system.file("csv/nav.csv", package = "flows"))
+head(nav, 4)
 # Prepare data
-myflows <- prepflows(mat = nav, i = "i", j = "j", fij = "fij")
-myflows[1:4,1:4]
+mat <- prepare_mat(x = nav, i = "i", j = "j", fij = "fij")
+mat[1:4, 1:4]
 
-## ---- fig.width=5, fig.height=5------------------------------------------
-# Import data
-data(nav)
-myflows <- prepflows(mat = nav, i = "i", j = "j", fij = "fij")
-
+## ----fig.width=5, fig.height=5------------------------------------------------
 # Get statistics about the matrix
-statmat(mat = myflows, output = "none", verbose = TRUE)
+stat_mat(mat = mat, output = "none", verbose = TRUE)
 
 # Plot Lorenz curve only
-statmat(mat = myflows, output = "lorenz", verbose = FALSE)
+stat_mat(mat = mat, output = "lorenz", verbose = FALSE)
 
-## ---- fig.width=7, fig.height=7------------------------------------------
+## ----fig.width=7, fig.height=7------------------------------------------------
 # Graphics only
-statmat(mat = myflows, output = "all", verbose = FALSE)
+stat_mat(mat = mat, output = "all", verbose = FALSE)
 
 # Statistics only
-mystats <- statmat(mat = myflows, output = "none", verbose = FALSE)
+mystats <- stat_mat(mat = mat, output = "none", verbose = FALSE)
 str(mystats)
 # Sum of flows
 mystats$sumflows
 
-
-## ---- fig.height = 4, fig.width=4----------------------------------------
-# Import data
-data(nav)
-myflows <- prepflows(mat = nav, i = "i", j = "j", fij = "fij")
-
+## ----fig.height = 4, fig.width=4----------------------------------------------
 # Remove the matrix diagonal
-diag(myflows) <- 0
+diag(mat) <- 0
 
 # Selection of flows > 500
-flowSel1 <- firstflowsg(mat = myflows, method = "xfirst", k = 500)
+mat_sel_1 <- select_flows(mat = mat, method = "xfirst", k = 500, global = TRUE)
+
 # Selection of flows > 1000
-flowSel2 <- firstflowsg(mat = myflows, method = "xfirst", k = 1000)
+mat_sel_2 <- select_flows(mat = mat, method = "xfirst", k = 1000, global = TRUE)
 
 # Compare initial matrix and selected matrices
-compmat(mat1 = myflows, mat2 = myflows * flowSel1, digits = 1)
-compmat(mat1 = myflows, mat2 = myflows * flowSel2, digits = 1)
+compare_mat(mat1 = mat, mat2 = mat * mat_sel_1, digits = 0)
+compare_mat(mat1 = mat, mat2 = mat * mat_sel_2, digits = 0)
 
-## ---- fig.height = 6, fig.width=6----------------------------------------
-# Import data
-data(nav)
-myflows <- prepflows(mat = nav, i = "i", j = "j", fij = "fij")
-
-# Remove the matrix diagonal
-diag(myflows) <- 0
-
+## ----fig.height = 6, fig.width=6----------------------------------------------
 # Percentage of each outgoing flows
-myflows2 <- myflows / rowSums(myflows) * 100
+mat_p <- mat / rowSums(mat) * 100
 
-# Select flows that represent at least 20% of the sum of outgoing flows for 
+# Select flows that represent at least 20% of the sum of outgoing flows for
 # each urban area.
-flowSel <- firstflows(mat = myflows2, method = "xfirst", k = 20)
+mat_p_sel <- select_flows(mat = mat_p, method = "xfirst", k = 20)
 
 # Compare initial and selected matrices
-compmat(mat1 = myflows,mat2 = flowSel * myflows)
+compare_mat(mat1 = mat, mat2 = mat * mat_p_sel, digits = 2)
 
+## -----------------------------------------------------------------------------
+res <- nodal_flows(mat)
 
-## ---- fig.height=7, fig.width=7, eval = TRUE-----------------------------
-# Import data
-data(nav)
-myflows <- prepflows(mat = nav, i = "i", j = "j", fij = "fij")
+compare_mat(mat1 = mat, mat2 = res)
 
-# Remove the matrix diagonal
-diag(myflows) <- 0
-
-# Select flows that represent at least 20% of the sum of outgoing flows for 
-# each urban area.
-flowSel1 <- firstflows(mat = myflows/rowSums(myflows)*100, method = "xfirst", 
-                       k = 20)
-
-
-# Select the dominant flows (incoming flows criterion)
-flowSel2 <- domflows(mat = myflows, w = colSums(myflows), k = 1)
-
-# Combine selections
-flowSel <- myflows * flowSel1 * flowSel2
-
-# Node weights
-inflows <- data.frame(id = colnames(myflows), w = colSums(myflows))
-
-# Plot dominant flows map
-opar <- par(mar = c(0,0,2,0))
-sp::plot(GE, col = "#cceae7", border = NA)
-plotMapDomFlows(mat = flowSel, spdf = UA, spdfid = "ID", w = inflows, wid = "id",
-                wvar = "w", wcex = 0.05, add = TRUE,
-                legend.flows.pos = "topright",
-                legend.flows.title = "Nb. of commuters")
-title("Dominant Flows of Commuters")
-mtext(text = "INSEE, 2011", side = 4, line = -1, adj = 0.01, cex = 0.8)
-par(opar)
-
-
-# Statistics on major urban areas
-inflows <- data.frame(id = colnames(flowSel), w = colSums(flowSel))
-UA.df <- unique(data.frame(id = c(nav$i, nav$j),name = c(nav$namei, nav$namej)))
-UAindegreew <- merge(inflows, UA.df, by = "id", all.x = TRUE)
-UAindegreew[order(UAindegreew$w, decreasing = TRUE),][1:10,]
-
+## ----fig.height=5.77, fig.width=6, eval = TRUE--------------------------------
+library(sf)
+library(mapsf)
+UA <- st_read(system.file("gpkg/GE.gpkg", package = "flows"),
+  layer = "urban_area", quiet = TRUE
+)
+GE <- st_read(system.file("gpkg/GE.gpkg", package = "flows"),
+  layer = "region", quiet = TRUE
+)
+mf_map(GE, col = "#c6deba", border = NA, expandBB = c(0, 0, 0, .25))
+out <- map_nodal_flows(
+  mat = mat, x = UA,
+  col_node = c("red", "orange", "yellow"),
+  col_flow = "grey30",
+  leg_pos = "topright",
+  leg_flow = "Nb. of commuters",
+  breaks = c(4, 100, 1000, 2500, 8655),
+  lwd = c(1, 4, 8, 16), add = TRUE
+)
+mf_label(out$nodes[out$nodes$w > 6000, ],
+  var = "name",
+  halo = TRUE, overlap = FALSE
+)
+mf_title("Dominant Flows of Commuters")
+mf_credits("INSEE, 2011")
+mf_scale()
+head(out$nodes[order(out$nodes$w, decreasing = TRUE), 2:3, drop = TRUE])
 

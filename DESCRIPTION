@@ -1,29 +1,42 @@
 Package: flows
 Type: Package
-Title: Flow Selection and Analysis
-Version: 1.1.1
-Date: 2016-06-06
+Title: Flow Matrix Selection with Statistics and Visualisation
+Version: 2.0.0
 Authors@R: c(
-      person("Timothée", "Giraud", email = "timothee.giraud@ums-riate.fr", role = c("cre","aut")),
-      person("Laurent", "Beauguitte", email = "laurent.beauguitte@univ-rouen.fr", role = c("aut")),
-      person("Marianne", "Guérois", email = "guerois@parisgeo.cnrs.fr", role = c("ctb")))
-Description: Selections on flow matrices, statistics on selected flows, map and
-    graph visualisations.
+    person("Timothée", "Giraud", email = "timothee.giraud@cnrs.fr",
+    role = c("cre","aut"), comment = c(ORCID = "0000-0002-1932-3323")),
+    person("Laurent", "Beauguitte",
+    role = c("aut"), comment = c(ORCID = "0000-0001-8803-6056")),
+    person("Marianne", "Guérois",
+    role = c("aut"), comment = c(ORCID = "0000-0001-8285-1877"))
+    )
+Description: The analysis and representation of flows often presuppose a selection
+    to facilitate interpretation. Various methods have been proposed for selecting
+    flows, one of the most widely used being based on major flows: it selects only
+    the most important flows, absolute or relative, on a local or global scale.
+    These methods often highlight hierarchies between locations, but the loss of
+    information caused by selection is rarely taken into account. We
+    propose statistical indicators to assess the loss of information
+    and the characteristics of selected flows. We provide functions that select
+    flows (main, dominant or major flows), provide statistics on selections and
+    offer visualizations in the form of maps and graphs.
+    See Beauguitte et al. (2015) <doi:10.4000/netcom.2134> for more details.
 License: GPL-3
-LazyData: TRUE
-Depends: R (>= 2.10)
-Imports: reshape2, igraph, sp, graphics, stats
-Suggests: knitr
-URL: https://github.com/rCarto/flows
-BugReports: https://github.com/rCarto/flows/issues
+Depends: R (>= 3.6.0)
+Imports: igraph, graphics, mapsf, maplegend, utils, stats
+Suggests: sf, knitr, rmarkdown
+URL: https://codeberg.org/riatelab/flows
+BugReports: https://codeberg.org/riatelab/flows/issues
 VignetteBuilder: knitr
 Encoding: UTF-8
-RoxygenNote: 5.0.1
+Config/roxygen2/version: 8.1.1
 NeedsCompilation: no
-Packaged: 2016-06-06 09:11:43 UTC; tg
-Author: Timothée Giraud [cre, aut],
-  Laurent Beauguitte [aut],
-  Marianne Guérois [ctb]
-Maintainer: Timothée Giraud <timothee.giraud@ums-riate.fr>
+Packaged: 2026-10-28 14:54:29 UTC; tim
+Author: Timothée Giraud [cre, aut] (ORCID:
+    <https://orcid.org/0000-0002-1932-3323>),
+  Laurent Beauguitte [aut] (ORCID:
+    <https://orcid.org/0000-0001-8803-6056>),
+  Marianne Guérois [aut] (ORCID: <https://orcid.org/0000-0001-8285-1877>)
+Maintainer: Timothée Giraud <timothee.giraud@cnrs.fr>
 Repository: CRAN
-Date/Publication: 2016-06-06 11:40:06
+Date/Publication: 2026-11-13 18:00:08 UTC
